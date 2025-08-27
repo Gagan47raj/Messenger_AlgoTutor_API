@@ -16,7 +16,9 @@ import com.algotutor.messenger.dto.MessageDTO;
 import com.algotutor.messenger.dto.SendMessageRequest;
 import com.algotutor.messenger.entities.Message;
 import com.algotutor.messenger.entities.User;
+import com.algotutor.messenger.exception.UnauthorizedException;
 import com.algotutor.messenger.repos.MessageRepository;
+import com.algotutor.messenger.repos.UserRepository;
 
 @Service
 public class ChatService {
@@ -26,6 +28,9 @@ public class ChatService {
 	
 	@Autowired
 	private RoomService roomService;
+	
+	@Autowired
+	private UserRepository userRepo;
 	
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate; 
@@ -67,6 +72,31 @@ public class ChatService {
                 .map(MessageDTO::new)
                 .collect(Collectors.toList());
     }
+	
+	 public MessageDTO sendMessageViaWebSocket(String roomId, SendMessageRequest request, String username) {
+	        // Get user from database
+	        User currentUser = userRepo.findByUsername(username)
+	                .orElseThrow(() -> new UnauthorizedException("User not found: " + username));
+
+	        // Verify room exists
+	        roomService.getRoomByRoomId(roomId);
+
+	        // Create and save message
+	        Message message = new Message(roomId, currentUser.getId(), 
+	                                    currentUser.getUsername(), request.getContent());
+	        Message savedMessage = messageRepo.save(message);
+
+	        // Add message to room
+	        roomService.addMessageToRoom(roomId, savedMessage.getId());
+
+	        // Create DTO for response and broadcast
+	        MessageDTO messageDto = new MessageDTO(savedMessage);
+
+	        // Broadcast message to WebSocket subscribers
+	        messagingTemplate.convertAndSend("/topic/rooms/" + roomId, messageDto);
+
+	        return messageDto;
+	    }
 
 
 }
