@@ -8,11 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.algotutor.messenger.dto.MessageDTO;
 import com.algotutor.messenger.dto.SendMessageRequest;
 import com.algotutor.messenger.entities.Message;
+import com.algotutor.messenger.entities.User;
 import com.algotutor.messenger.repos.MessageRepository;
 
 @Service
@@ -28,11 +31,16 @@ public class ChatService {
 	private SimpMessagingTemplate messagingTemplate; 
 	
 	public MessageDTO sendMessage(String roomId, SendMessageRequest request) {
+        // Get current authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+
         // Verify room exists
         roomService.getRoomByRoomId(roomId);
 
         // Create and save message
-        Message message = new Message(roomId, request.getSender(), request.getContent());
+        Message message = new Message(roomId, currentUser.getId(), 
+                                    currentUser.getUsername(), request.getContent());
         Message savedMessage = messageRepo.save(message);
 
         // Add message to room

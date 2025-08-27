@@ -19,21 +19,27 @@ public class Message {
 
 	@Id
 	private String id;
-	
+
 	@Indexed
 	private String roomId;
 	
-	 private String sender;
-	 private String content;
-	 
-	 @CreatedDate
-	 private LocalDateTime timestamp;
-	 
-	 public Message(String roomId, String sender, String content) {
-	        this.roomId = roomId;
-	        this.sender = sender;
-	        this.content = content;
-	        this.timestamp = LocalDateTime.now();
-	    }
+	@Indexed
+    private String userId;
+	
+	
+
+	private String sender;
+	private String content;
+
+	@CreatedDate
+	private LocalDateTime timestamp;
+
+	public Message(String roomId, String userId, String sender, String content) {
+		this.roomId = roomId;
+		this.userId = userId;
+		this.sender = sender;
+		this.content = content;
+		this.timestamp = LocalDateTime.now();
+	}
 
 }

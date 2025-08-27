@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.algotutor.messenger.dto.CreateRoomRequest;
 import com.algotutor.messenger.dto.RoomDTO;
 import com.algotutor.messenger.entities.Room;
+import com.algotutor.messenger.entities.User;
 import com.algotutor.messenger.exception.RoomNotFoundException;
 import com.algotutor.messenger.repos.RoomRepository;
 import com.mongodb.DuplicateKeyException;
@@ -21,8 +24,10 @@ public class RoomService {
 	
 	public RoomDTO createRoom(CreateRoomRequest request)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
 		 try {
-		        Room room = new Room(request.getName(), request.getRoomId());
+		        Room room = new Room(request.getName(), currentUser.getId(), request.getRoomId());
 		        Room savedRoom = roomRepo.save(room);
 		        return new RoomDTO(savedRoom);
 		    } catch (DuplicateKeyException ex) {
