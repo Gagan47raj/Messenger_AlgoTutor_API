@@ -45,6 +45,9 @@ public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
                         
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         accessor.setUser(authentication);
+                        
+                        accessor.getSessionAttributes().put("username", username);
+                        System.out.println("WebSocket user authenticated: " + username); // Debug log
                     }
                 }
             }

@@ -58,6 +58,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
+                .requestMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated()
             );
 
