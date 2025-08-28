@@ -34,4 +34,23 @@ public class WebSocketController {
         
         chatService.sendMessageViaWebSocket(roomId, request, username);
     }
+    
+    @MessageMapping("/private/{chatId}")
+    public void sendPrivateMessage(@DestinationVariable String chatId,
+                                  SendMessageRequest request,
+                                  SimpMessageHeaderAccessor headerAccessor) {
+        
+        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        
+        if (username == null && headerAccessor.getUser() != null) {
+            username = headerAccessor.getUser().getName();
+        }
+        
+        if (username == null) {
+            throw new RuntimeException("User not authenticated in WebSocket");
+        }
+        
+        chatService.sendPrivateMessageViaWebSocket(chatId, request, username);
+    }
+
 }
