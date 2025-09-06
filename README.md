@@ -38,3 +38,111 @@ Real-time chat application backend built with Spring Boot, featuring scalable me
 ## ⚡ Quick Start
 
 ### 1. Clone the repository
+
+git clone https://github.com/Gagan47raj/Messenger_AlgoTutor_API.git
+cd Messenger_AlgoTutor_API
+
+
+### 2. Configure application.properties
+MongoDB Configuration
+spring.data.mongodb.uri=mongodb://localhost:27017/genz_messenger
+
+Redis Configuration
+spring.redis.host=localhost
+spring.redis.port=6379
+
+JWT Configuration
+jwt.secret=your-secret-key
+jwt.expiration=86400000
+### 3. Build and run
+./mvnw clean package
+java -jar target/genz-messenger-backend-0.0.1-SNAPSHOT.jar
+
+The server will start on `http://localhost:8080`
+
+## 📡 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `GET /api/users/me` - Get current user info
+
+### Rooms
+- `GET /api/rooms` - Get all rooms
+- `POST /api/rooms` - Create new room
+- `GET /api/rooms/{roomId}/messages` - Get room messages
+
+### Private Chats
+- `GET /api/private-chats` - Get user's private chats
+- `POST /api/private-chats` - Create private chat
+- `POST /api/private-chats/{chatId}/messages` - Send private message
+
+### Media Upload
+- `POST /api/upload` - Upload media file
+- `POST /api/rooms/{roomId}/media` - Send media message
+
+## 🔌 WebSocket Endpoints
+
+- **Connection**: `/ws` - Main WebSocket endpoint
+- **Room Messaging**: `/app/chat/{roomId}` - Send room message
+- **Private Messaging**: `/app/private/{chatId}` - Send private message
+- **Room Subscription**: `/topic/rooms/{roomId}` - Subscribe to room messages
+- **Private Subscription**: `/topic/private/{chatId}` - Subscribe to private messages
+
+## 🏗️ Architecture
+
+
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ Frontend │ │ Backend │ │ Database │
+│ (React) │◄──►│ (Spring Boot) │◄──►│ (MongoDB) │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+▲ ▼
+┌─────────────────┐
+│ Redis │
+│ (Pub/Sub) │
+└─────────────────┘
+
+
+## 🔧 Development
+
+### Running Multiple Instances
+
+Instance 1
+java -jar target/app.jar --server.port=8080
+
+Instance 2
+java -jar target/app.jar --server.port=8081
+
+Instance 3
+java -jar target/app.jar --server.port=8082
+
+
+### Testing WebSocket
+Use a WebSocket client or browser dev tools to connect to `/ws` endpoint and test real-time messaging.
+
+### Redis Pub/Sub Monitoring
+redis-cli monitor
+
+
+## 🐳 Docker Support
+
+FROM openjdk:17-jdk-slim
+COPY target/genz-messenger-backend-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+
+
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+
